@@ -1,0 +1,46 @@
+---
+title: Getting Started
+description: Build and run Tinycord
+---
+
+## Prerequisites
+
+- [Zig](https://ziglang.org/download/) 0.13+
+- **Linux**: `webkit2gtk-4.1` dev headers
+- **macOS**: Xcode Command Line Tools
+- **Windows**: WebView2 (included with Windows 11)
+
+## Build and run
+
+```sh
+git clone https://github.com/ilyeshdz/tinycord
+cd tinycord/apps/desktop
+zig build run
+```
+
+## macOS bundle
+
+```sh
+zig build app
+```
+
+Produces a signed `Tinycord.app` with camera and microphone entitlements.
+
+## Project structure
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+
+- build.zig
+- build.zig.zon
+- package.json
+- assets/
+  - entitlements.plist
+  - icon.icns
+- src/
+  - main.zig
+  - macos/
+    - media.m
+
+</FileTree>

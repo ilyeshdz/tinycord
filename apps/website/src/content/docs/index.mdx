@@ -1,0 +1,46 @@
+---
+title: Tinycord
+description: A native Discord client written in Zig
+template: splash
+hero:
+  tagline: A native Discord client written in Zig
+  actions:
+    - text: Get Started
+      link: /guides/example/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/ilyeshdz/tinycord
+      icon: external
+      variant: minimal
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A native Discord client using [zig-webview](https://github.com/happystraw/zig-webview). No Electron.
+
+## Why?
+
+There's [Dorion](https://github.com/spinfal/dorion) doing the same with Tauri, but I wanted to write it in Zig. Started as an experiment, turned into something I use daily.
+
+<Aside type="caution">
+  **Early stage.** I develop on macOS. Linux and Windows should work but aren't well tested. Expect bugs.
+</Aside>
+
+## What's included
+
+- Cross-platform (Linux, macOS, Windows)
+- Camera and microphone support
+- No Electron, no heavy runtime
+
+## What's not
+
+- No plugin system (Vencord, etc.). Might come later.
+- No custom theming
+
+## Try it
+
+```sh
+git clone https://github.com/ilyeshdz/tinycord
+cd tinycord/apps/desktop
+zig build run
+```
