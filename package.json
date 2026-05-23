@@ -1,36 +1,11 @@
 {
   "name": "tinycord",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "packageManager": "pnpm@10.4.1",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs --dev",
-    "client:build": "VENCORD_HASH=tinycord VENCORD_REMOTE=tinycord/tinycord pnpm --dir packages/client buildWeb --skip-extension",
-    "client:dev": "VENCORD_HASH=tinycord-dev VENCORD_REMOTE=tinycord/tinycord pnpm --dir packages/client buildWeb --skip-extension --watch --dev",
-    "app:dev": "pnpm --filter @tinycord/app tauri dev",
-    "app:build": "pnpm --filter @tinycord/app tauri build"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "eslint-plugin-path-alias@2.1.0": "packages/client/patches/eslint-plugin-path-alias@2.1.0.patch"
-    },
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "eslint-plugin-import",
-        "eslint"
-      ]
-    },
-    "allowedDeprecatedVersions": {
-      "source-map-resolve": "*",
-      "resolve-url": "*",
-      "source-map-url": "*",
-      "urix": "*",
-      "q": "*"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
+    "build": "pnpm -r build",
+    "start": "pnpm -r start"
   }
 }

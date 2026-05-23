@@ -1,0 +1,9 @@
+{
+    "name": "@tinycord/desktop",
+    "private": true,
+    "version": "0.0.1",
+    "scripts": {
+        "start": "zig build run",
+        "build": "zig build app"
+    }
+}
