@@ -13,6 +13,14 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    if (target.result.os.tag == .macos) {
+        exe.root_module.addCSourceFile(.{
+            .file = b.path("src/macos/media.m"),
+            .flags = &.{"-fobjc-arc"},
+        });
+        exe.root_module.linkFramework("CoreFoundation", .{});
+    }
+
     const webview_dep = b.dependency("webview", .{
         .target = target,
         .optimize = optimize,
@@ -28,7 +36,20 @@ pub fn build(b: *std.Build) void {
 
     const app_step = b.step("app", "Build the app");
     const bundle = makeAppBundle(b, exe, "assets/icon.icns");
-    app_step.dependOn(bundle);
+
+    if (target.result.os.tag == .macos) {
+        const sign_cmd = b.addSystemCommand(&.{
+            "codesign",
+            "--force",
+            "--sign", "-",
+            "--entitlements", b.pathFromRoot("assets/entitlements.plist"),
+            b.fmt("{s}/Tinycord.app", .{b.install_path}),
+        });
+        sign_cmd.step.dependOn(bundle);
+        app_step.dependOn(&sign_cmd.step);
+    } else {
+        app_step.dependOn(bundle);
+    }
 }
 
 fn makeAppBundle(
@@ -65,6 +86,10 @@ fn makeAppBundle(
         \\    <true/>
         \\    <key>CFBundleIconFile</key>
         \\    <string>icon.icns</string>
+        \\    <key>NSMicrophoneUsageDescription</key>
+        \\    <string>Tinycord needs microphone access for voice calls.</string>
+        \\    <key>NSCameraUsageDescription</key>
+        \\    <string>Tinycord needs camera access for video calls.</string>
         \\</dict>
         \\</plist>
     ;
