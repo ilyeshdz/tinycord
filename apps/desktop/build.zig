@@ -69,7 +69,7 @@ fn makeAppBundle(
         \\    <key>CFBundleExecutable</key>
         \\    <string>tinycord</string>
         \\    <key>CFBundleIdentifier</key>
-        \\    <string>com.example.tinycord</string>
+        \\    <string>me.hdzilyes.tinycord</string>
         \\    <key>CFBundleInfoDictionaryVersion</key>
         \\    <string>6.0</string>
         \\    <key>CFBundleName</key>
