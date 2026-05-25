@@ -2,6 +2,9 @@ version: 2
 
 project_name: tinycord
 
+env:
+  - SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
 builds:
   - builder: zig
     binary: tinycord
@@ -9,10 +12,12 @@ builds:
     targets:
       - aarch64-macos
       - x86_64-macos
-      - aarch64-linux-gnu
-      - x86_64-linux-gnu
       - aarch64-windows-gnu
       - x86_64-windows-gnu
+    flags:
+      - -Doptimize=ReleaseSafe
+      - --sysroot
+      - '{{ .Env.SDKROOT }}'
 
 archives:
   - formats: [tar.gz]

@@ -19,12 +19,27 @@ pub fn build(b: *std.Build) void {
             .flags = &.{"-fobjc-arc"},
         });
         exe.root_module.linkFramework("CoreFoundation", .{});
+        if (getMacOSSDK(b)) |sdk| {
+            const sdk_path: std.Build.LazyPath = .{ .cwd_relative = sdk };
+            exe.root_module.addSystemIncludePath(sdk_path.path(b, "usr/include"));
+            exe.root_module.addLibraryPath(sdk_path.path(b, "usr/lib"));
+            exe.root_module.addFrameworkPath(sdk_path.path(b, "System/Library/Frameworks"));
+            exe.root_module.addSystemFrameworkPath(sdk_path.path(b, "System/Library/Frameworks"));
+        }
     }
 
-    const webview_dep = b.dependency("webview", .{
-        .target = target,
-        .optimize = optimize,
-    });
+    const macos_sdk = if (target.result.os.tag == .macos) getMacOSSDK(b) else null;
+    const webview_dep = if (macos_sdk) |sdk|
+        b.dependency("webview", .{
+            .target = target,
+            .optimize = optimize,
+            .@"macos-sdk" = sdk,
+        })
+    else
+        b.dependency("webview", .{
+            .target = target,
+            .optimize = optimize,
+        });
     exe.root_module.addImport("webview", webview_dep.module("webview"));
 
     const run_exe = b.addRunArtifact(exe);
@@ -120,4 +135,18 @@ fn makeAppBundle(
     bundle_step.dependOn(&exe_install.step);
 
     return bundle_step;
+}
+
+fn getMacOSSDK(b: *std.Build) ?[]const u8 {
+    if (std.c.getenv("SDKROOT")) |sdk| return std.mem.span(sdk);
+    const sdk_paths = [_][]const u8{
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    };
+    for (sdk_paths) |path| {
+        const path_z = b.allocator.dupeZ(u8, path) catch continue;
+        defer b.allocator.free(path_z);
+        if (std.c.access(path_z.ptr, std.c.F_OK) == 0) return path;
+    }
+    return null;
 }
