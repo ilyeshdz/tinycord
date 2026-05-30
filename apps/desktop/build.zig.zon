@@ -3,8 +3,8 @@
     .version = "0.16.0",
     .dependencies = .{
         .webview = .{
-            .url = "git+https://github.com/happystraw/zig-webview#9bc7578e1d664df4ab6e108139caf227db3dd333",
-            .hash = "webview-0.0.0-mgPxHENQKQC6PcxDDoyRfGTD_4NXhO4igTycyTZ_BDr6",
+            .url = "git+https://github.com/ilyeshdz/zig-webview#5e93a13d93b137673cc18c539dd9139e2d08617c",
+            .hash = "webview-0.0.0-mgPxHCZQKQD7wN0IyKPbMmUPeqPu4a_EGoQeExF8cJ5U",
         },
     },
     .paths = .{""},
