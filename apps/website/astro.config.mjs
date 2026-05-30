@@ -14,6 +14,10 @@ export default defineConfig({
       ],
       sidebar: [
         {
+          label: 'Download',
+          slug: 'download',
+        },
+        {
           label: 'Guides',
           items: [
             { label: 'Getting Started', slug: 'guides/example' },
