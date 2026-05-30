@@ -1,18 +1,27 @@
 {
-  "name": "website",
+  "name": "@tinycord/website",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.39.2",
-    "astro": "^6.3.1",
-    "sharp": "^0.34.5",
-    "starlight-theme-rapide": "^0.5.2"
+    "@astrojs/mdx": "^6.0.1",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.3",
+    "@unocss/astro": "^66.7.0",
+    "@unocss/preset-attributify": "^66.7.0",
+    "@unocss/preset-typography": "^66.7.0",
+    "@unocss/preset-uno": "^66.7.0",
+    "@unocss/reset": "^66.7.0",
+    "astro": "^6.4.2",
+    "sharp": "^0.34.3",
+    "unocss": "^66.7.0"
   }
 }

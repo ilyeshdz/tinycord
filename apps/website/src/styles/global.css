@@ -1,0 +1,58 @@
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-atkinson);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #0d9488;
+  color: white;
+}
+
+.dark ::selection {
+  background-color: #2dd4bf;
+  color: #0f172a;
+}
+
+:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.dark :focus-visible {
+  outline-color: #2dd4bf;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.prose pre {
+  font-size: 0.875em;
+}
+
+.prose pre code {
+  all: unset;
+  display: block;
+}

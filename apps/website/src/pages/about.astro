@@ -1,0 +1,66 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`About - ${SITE_TITLE}`}
+      description="About the Tinycord project"
+    />
+  </head>
+  <body class="bg-surface text-primary">
+    <Header />
+
+    <main class="prose prose-gray dark:prose-invert max-w-2xl mx-auto px-4 py-16">
+      <div class="not-prose">
+        <h1 class="text-3xl font-bold tracking-tight m-0 mb-8 text-primary">
+          About Tinycord
+        </h1>
+      </div>
+
+      <p>
+        Tinycord is a minimal, fast, and secure alternative to the official
+        Discord desktop client. It wraps Discord's web app in a lightweight
+        native WebView instead of bundling an entire Chromium runtime like
+        Electron-based clients do.
+      </p>
+
+      <h2>Why?</h2>
+      <p>
+        The official Discord client is built on Electron, which bundles a full
+        Chromium browser (~200 MB). Tinycord uses your system's native WebView
+        (WKWebView on macOS, WebKitGTK on Linux, WebView2 on Windows),
+        resulting in a binary under 5 MB with less memory usage and faster
+        startup.
+      </p>
+
+      <h2>Tech</h2>
+      <ul>
+        <li><strong>Language:</strong> Zig 0.14</li>
+        <li>
+          <strong>WebView:</strong> zig-webview via a custom fork for macOS
+          media support
+        </li>
+        <li>
+          <strong>Build:</strong> Zig build system, GoReleaser for
+          cross-platform releases
+        </li>
+      </ul>
+
+      <h2>Privacy</h2>
+      <p>
+        Tinycord does not collect any telemetry, analytics, or usage data. It
+        has no background processes, no auto-updater, and no bundled ads.
+        Microphone and camera access are requested only when needed for
+        voice/video calls and can be revoked at any time via system settings.
+      </p>
+    </main>
+
+    <Footer />
+  </body>
+</html>
