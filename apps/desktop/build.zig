@@ -67,14 +67,27 @@ pub fn build(b: *std.Build) void {
     }
 }
 
+fn getVersion() []const u8 {
+    if (std.c.getenv("GORELEASER_CURRENT_TAG")) |tag| {
+        const s = std.mem.span(tag);
+        return if (s.len > 0 and s[0] == 'v') s[1..] else s;
+    }
+    if (std.c.getenv("GITHUB_REF_NAME")) |ref| {
+        const s = std.mem.span(ref);
+        return if (s.len > 0 and s[0] == 'v') s[1..] else s;
+    }
+    return "0.1.0";
+}
+
 fn makeAppBundle(
     b: *std.Build,
     exe: *std.Build.Step.Compile,
     icon_path: []const u8,
 ) *std.Build.Step {
     const write_files = b.addWriteFiles();
+    const ver = getVersion();
 
-    const plist =
+    const plist = b.fmt(
         \\<?xml version="1.0" encoding="UTF-8"?>
         \\<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
         \\<plist version="1.0">
@@ -92,9 +105,9 @@ fn makeAppBundle(
         \\    <key>CFBundlePackageType</key>
         \\    <string>APPL</string>
         \\    <key>CFBundleShortVersionString</key>
-        \\    <string>0.1.0</string>
+        \\    <string>{s}</string>
         \\    <key>CFBundleVersion</key>
-        \\    <string>1</string>
+        \\    <string>{s}</string>
         \\    <key>LSMinimumSystemVersion</key>
         \\    <string>12.0</string>
         \\    <key>NSHighResolutionCapable</key>
@@ -107,7 +120,7 @@ fn makeAppBundle(
         \\    <string>Tinycord needs camera access for video calls.</string>
         \\</dict>
         \\</plist>
-    ;
+    , .{ ver, ver });
 
     const plist_file = write_files.add("Info.plist", plist);
 

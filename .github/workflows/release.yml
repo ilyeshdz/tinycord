@@ -47,10 +47,10 @@ jobs:
       - name: Build Linux binaries
         run: |
           cd apps/desktop
-          zig build -Dtarget=x86_64-linux-gnu.2.31 -Doptimize=ReleaseSafe
-          zig build -Dtarget=aarch64-linux-gnu.2.31 -Doptimize=ReleaseSafe
+          zig build -Dtarget=x86_64-linux-gnu.2.31 -Doptimize=ReleaseSafe --prefix zig-out/x86_64-linux-gnu
+          zig build -Dtarget=aarch64-linux-gnu.2.31 -Doptimize=ReleaseSafe --prefix zig-out/aarch64-linux-gnu
       - name: Upload to release
         run: |
-          gh release upload ${{ github.ref_name }} apps/desktop/zig-out/bin/tinycord* --clobber
+          gh release upload ${{ github.ref_name }} apps/desktop/zig-out/*/bin/tinycord --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
