@@ -1,0 +1,124 @@
+---
+---
+
+<div id="downloads-container">
+  <p id="downloads-loading">Loading latest release...</p>
+</div>
+
+<style>
+  .download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+  .download-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: var(--sl-color-gray-7);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .download-card:hover {
+    border-color: var(--sl-color-accent);
+    background: var(--sl-color-gray-6);
+  }
+  .download-card .platform {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .download-card .meta {
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+  }
+  .download-card .action {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--sl-color-accent);
+  }
+  .download-card.primary {
+    border-color: var(--sl-color-accent);
+    background: color-mix(in srgb, var(--sl-color-accent) 8%, var(--sl-color-gray-7));
+  }
+  .download-card.primary:hover {
+    background: color-mix(in srgb, var(--sl-color-accent) 16%, var(--sl-color-gray-6));
+  }
+  .download-card.primary .action {
+    font-weight: 600;
+  }
+  .platform-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--sl-color-accent);
+    color: var(--sl-color-white);
+    margin-bottom: 0.25rem;
+  }
+  #downloads-loading {
+    color: var(--sl-color-gray-3);
+  }
+</style>
+
+<script>
+  (async function() {
+    var container = document.getElementById('downloads-container');
+    try {
+      var res = await fetch('https://api.github.com/repos/ilyeshdz/tinycord/releases/latest');
+      if (!res.ok) throw new Error(String(res.status));
+      var release = await res.json();
+      var version = release.tag_name.replace(/^v/, '');
+      var assets = release.assets;
+
+      function match(re) {
+        return assets.find(function(a) { return re.test(a.name); }) || null;
+      }
+
+      var dmgArm   = match(/macOS.*arm64.*\.dmg$/i);
+      var dmgX86   = match(/macOS.*x86_64.*\.dmg$/i);
+      var exeX86   = match(/Windows.*x86_64.*\.exe$/i);
+      var exeArm   = match(/Windows.*arm64.*\.exe$/i);
+
+      var plat = navigator.platform.toLowerCase();
+      var isMac = plat.indexOf('mac') !== -1;
+      var isWin = plat.indexOf('win') !== -1;
+
+      function card(label, arch, url, primary) {
+        var cls = primary ? 'download-card primary' : 'download-card';
+        var badge = primary ? '<span class="platform-badge">Recommended</span>' : '';
+        var arrow = '\u2193';
+        return '<a href="' + url + '" class="' + cls + '">' + badge + '<span class="platform">' + label + '</span><span class="meta">' + arch + '</span><span class="action">Download ' + arrow + '</span></a>';
+      }
+
+      var html = '<p style="margin-bottom:0.5rem"><strong>Version ' + version + '</strong></p>';
+      html += '<div class="download-grid">';
+
+      if (dmgArm) html += card('macOS', 'Apple Silicon', dmgArm.browser_download_url, isMac);
+      if (dmgX86) html += card('macOS', 'Intel', dmgX86.browser_download_url, isMac && !dmgArm);
+      if (!dmgArm && !dmgX86) {
+        var rawMac = match(/macOS.*\.tar\.gz$/i);
+        if (rawMac) html += card('macOS', 'Raw binary (no DMG yet)', rawMac.browser_download_url, isMac);
+      }
+
+      if (exeX86) html += card('Windows', 'x86_64', exeX86.browser_download_url, isWin);
+      if (exeArm) html += card('Windows', 'ARM64', exeArm.browser_download_url, isWin && !exeX86);
+      if (!exeX86 && !exeArm) {
+        var rawWin = match(/Windows.*\.zip$/i);
+        if (rawWin) html += card('Windows', 'Raw binary (no installer yet)', rawWin.browser_download_url, isWin);
+      }
+
+      html += '</div>';
+      var arrow2 = '\u2192';
+      html += '<p><a href="' + release.html_url + '">View all release assets on GitHub ' + arrow2 + '</a></p>';
+      container.innerHTML = html;
+    } catch(e) {
+      var arrow3 = '\u2192';
+      container.innerHTML = '<p>Could not load release info. <a href="https://github.com/ilyeshdz/tinycord/releases/latest">Download from GitHub Releases ' + arrow3 + '</a></p>';
+    }
+  })();
+</script>
