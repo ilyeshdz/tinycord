@@ -3,36 +3,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import { SITE_TITLE } from '../consts';
 
-interface Release {
-  tag_name: string
-  html_url: string
-  assets: {
-    name: string
-    browser_download_url: string
-  }[]
-}
+interface Asset { name: string; browser_download_url: string }
+
+interface Release { tag_name: string; html_url: string; assets: Asset[] }
+
+interface Entry { arch: string; test: RegExp | ((name: string) => boolean) }
+
+const osGroups: { os: string; entries: Entry[] }[] = [
+  {
+    os: 'macOS',
+    entries: [
+      { arch: 'Apple Silicon', test: /Darwin_arm64.*\.tar\.gz$/ },
+      { arch: 'Intel',         test: /Darwin_x86_64.*\.tar\.gz$/ },
+    ],
+  },
+  {
+    os: 'Windows',
+    entries: [
+      { arch: 'x86_64', test: /Windows_x86_64.*\.zip$/ },
+      { arch: 'ARM',    test: /Windows_arm64.*\.zip$/ },
+    ],
+  },
+  { os: 'Linux', entries: [] },
+]
 
 let release: Release | null = null
 let error: string | null = null
 
 try {
   const res = await fetch('https://api.github.com/repos/ilyeshdz/tinycord/releases/latest')
-  if (res.ok) {
-    release = await res.json()
-  } else {
-    error = `GitHub API returned ${res.status}`
-  }
+  if (res.ok) release = await res.json()
+  else error = `GitHub API returned ${res.status}`
 } catch {
   error = 'Could not fetch release data'
 }
 
-function find(re: RegExp) {
-  return release?.assets.find(a => re.test(a.name))
+function findAsset(test: Entry['test']): Asset | undefined {
+  return release?.assets.find(a => test instanceof RegExp ? test.test(a.name) : test(a.name))
 }
-
-const macAsset = find(/Darwin_arm64.*\.tar\.gz$/) || find(/Darwin_x86_64.*\.tar\.gz$/)
-const winAsset = find(/Windows_x86_64.*\.zip$/)
----
 
 const fallbackUrl = release?.html_url || 'https://github.com/ilyeshdz/tinycord/releases/latest'
 ---
@@ -43,51 +51,37 @@ const fallbackUrl = release?.html_url || 'https://github.com/ilyeshdz/tinycord/r
   {release && <p class="text-tertiary text-xs mt-1 m-0">{release.tag_name}</p>}
   {error && <p class="text-tertiary text-xs mt-1 m-0">{error}</p>}
 
-  <div class="grid gap-3 sm:grid-cols-2">
-    <article class="rounded-xl border border-default bg-muted p-5">
-      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">macOS</h2>
-      <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">
-        Apple Silicon & Intel
-      </p>
-      {
-        macAsset ? (
-          <Button variant="primary" href={macAsset.browser_download_url}>Download {macAsset.name.replace(/\.(dmg|tar\.gz)$/, '')}</Button>
-        ) : (
-          <Button variant="primary" href={fallbackUrl}>Download from GitHub</Button>
-        )
-      }
-    </article>
-
-    <article class="rounded-xl border border-default bg-muted p-5">
-      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">Windows</h2>
-      <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">x86_64</p>
-      {
-        winAsset ? (
-          <Button variant="primary" href={winAsset.browser_download_url}>Download {winAsset.name.replace(/\.(zip|exe)$/, '')}</Button>
-        ) : (
-          <Button variant="primary" href={fallbackUrl}>Download from GitHub</Button>
-        )
-      }
-    </article>
-
-    <article class="rounded-xl border border-default bg-muted p-5 opacity-60">
-      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">Linux</h2>
-      <p class="text-secondary text-xs m-0 mb-1 leading-relaxed">
-        Not available as a prebuilt binary yet.
-      </p>
-      <p class="text-tertiary text-xs m-0 leading-relaxed">
-        Build from source. See the README for dependencies (WebKitGTK).
-      </p>
-    </article>
+  <div class="mt-6 space-y-1">
+    {
+      osGroups.flatMap(({ os, entries }) =>
+        os === 'Linux'
+          ? [
+              <div class="border border-default p-3 opacity-60">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-primary">{os}</span>
+                  <span class="text-xs text-tertiary">source</span>
+                </div>
+                <div class="bg-muted p-3 text-xs font-mono text-secondary overflow-x-auto">
+                  <div>git clone https://github.com/ilyeshdz/tinycord.git</div>
+                  <div>cd tinycord/apps/desktop</div>
+                  <div class="text-tertiary"># install deps (see README)</div>
+                  <div>zig build app</div>
+                </div>
+              </div>,
+            ]
+          : entries.map(({ arch, test }) => {
+              const asset = findAsset(test)
+              return (
+                <div class="flex items-center justify-between border border-default p-3">
+                  <div>
+                    <span class="text-sm font-medium text-primary">{os}</span>
+                    <span class="text-xs text-secondary ml-2">{arch}</span>
+                  </div>
+                  <Button variant="primary" size="sm" href={asset?.browser_download_url || fallbackUrl}>Download</Button>
+                </div>
+              )
+            })
+      )
+    }
   </div>
-
-  <section class="mt-12 pt-8 border-t border-default">
-    <h2 class="text-sm font-semibold m-0 mb-3 text-primary">Build from source</h2>
-    <div class="bg-muted rounded-lg p-4 text-sm font-mono text-secondary overflow-x-auto">
-      <div>git clone https://github.com/ilyeshdz/tinycord.git</div>
-      <div>cd tinycord/apps/desktop</div>
-      <div class="text-tertiary"># install dependencies (see README)</div>
-      <div>zig build app</div>
-    </div>
-  </section>
 </BaseLayout>
