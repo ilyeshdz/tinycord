@@ -1,0 +1,18 @@
+---
+const { variant = "muted", class: className = "" } = Astro.props;
+
+const variants = {
+    muted: "inline-flex items-center border border-default bg-surface px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary",
+    accent: "inline-flex items-center bg-[#2dd4bf] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#0b1120]",
+    outline:
+        "inline-flex items-center border border-default bg-transparent px-2.5 py-1 text-xs font-semibold tracking-[0.18em] text-secondary",
+};
+
+const classes = [variants[variant] ?? variants.muted, className]
+    .filter(Boolean)
+    .join(" ");
+---
+
+<span class={classes}>
+    <slot />
+</span>

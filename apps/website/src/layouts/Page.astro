@@ -1,0 +1,14 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+const props = Astro.props;
+const fm = props.frontmatter || {};
+const pageTitle = props.pageTitle || props.title || fm.pageTitle || fm.title || 'Tinycord';
+const pageDescription = props.description || fm.description || '';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} mainClass="py-16">
+  <div class="prose prose-invert">
+    <slot />
+  </div>
+</BaseLayout>
