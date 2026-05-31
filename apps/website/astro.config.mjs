@@ -6,7 +6,8 @@ import UnoCSS from '@unocss/astro';
 import { defineConfig, fontProviders } from 'astro/config';
 
 export default defineConfig({
-	site: 'https://tinycord.app',
+	site: process.env.ASTRO_SITE_URL || 'https://tinycord.app',
+	base: process.env.ASTRO_BASE || '/',
 	integrations: [mdx(), sitemap(), UnoCSS({ injectReset: true })],
 	fonts: [
 		{
