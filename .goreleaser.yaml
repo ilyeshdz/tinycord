@@ -3,19 +3,31 @@ version: 2
 project_name: tinycord
 
 builds:
-  - builder: zig
+  - id: tinycord-darwin
+    builder: zig
     binary: tinycord
     dir: apps/desktop
     targets:
       - aarch64-macos
       - x86_64-macos
+    flags:
+      - -Doptimize=ReleaseSafe
+
+  - id: tinycord-windows
+    builder: zig
+    binary: tinycord
+    dir: apps/desktop
+    targets:
       - aarch64-windows-gnu
       - x86_64-windows-gnu
     flags:
       - -Doptimize=ReleaseSafe
 
 universal_binaries:
-  - replace: true
+  - id: tinycord
+    ids:
+      - tinycord-darwin
+    replace: true
 
 archives:
   - formats: [tar.gz]
