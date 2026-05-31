@@ -14,6 +14,9 @@ builds:
     flags:
       - -Doptimize=ReleaseSafe
 
+universal_binary:
+  - replace: true
+
 archives:
   - formats: [tar.gz]
     name_template: >-

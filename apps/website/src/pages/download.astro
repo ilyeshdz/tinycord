@@ -13,15 +13,13 @@ const osGroups: { os: string; entries: Entry[] }[] = [
   {
     os: 'macOS',
     entries: [
-      { arch: 'Apple Silicon', test: /Darwin_arm64.*\.tar\.gz$/ },
-      { arch: 'Intel',         test: /Darwin_x86_64.*\.tar\.gz$/ },
+      { arch: 'Apple Silicon & Intel', test: /universal\.dmg$/ },
     ],
   },
   {
     os: 'Windows',
     entries: [
-      { arch: 'x86_64', test: /Windows_x86_64.*\.zip$/ },
-      { arch: 'ARM',    test: /Windows_arm64.*\.zip$/ },
+      { arch: 'x86_64', test: /Setup\.exe$/ },
     ],
   },
   { os: 'Linux', entries: [] },

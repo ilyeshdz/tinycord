@@ -29,6 +29,21 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create macOS DMG
+        run: apps/desktop/scripts/make-dmg.sh
+        env:
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}
+      - name: Install NSIS
+        run: brew install makensis
+      - name: Create Windows installer
+        run: apps/desktop/scripts/make-installer.sh
+        env:
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}
+      - name: Upload installers to release
+        run: |
+          gh release upload "${{ github.ref_name }}" dist/*.dmg dist/*Setup.exe --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
     needs: goreleaser
