@@ -1,60 +1,23 @@
 ---
 title: 'Introducing Tinycord'
-description: 'A secure and lightweight alternative to the official Discord client.'
+description: 'A lightweight Discord client built with Zig — no Electron, no bloat.'
 pubDate: 'May 30 2026'
 ---
 
-Today I'm releasing Tinycord -- a minimal alternative to the official Discord desktop client, built with Zig.
+I've been thinking about Discord's desktop app for a while.
 
-## The problem
+It's built on Electron, which means it essentially ships a full Chromium browser just to render a chat interface. You end up with around 200 MB taken up on your disk and hundreds of megabytes of RAM down the drain, all for what is basically just a web page.
 
-The official Discord client is an Electron app. It bundles a full Chromium browser, takes ~200 MB on disk, and consumes significant memory even when idle. For a chat app, that's a lot of overhead.
+People have built some solid alternatives to fix this. [Vesktop](https://github.com/Vencord/Vesktop) is a popular choice because it runs Discord's web app in a newer version of Electron than the official client and hooks up Vencord for client modding. While it runs better than stock Discord, it doesn't escape the underlying issue because it's still Electron and it's still shipping a browser.
 
-## The approach
+Then you have projects like [Dorion](https://spikehd.dev/projects/dorion/), which uses Tauri. This is much closer to what I wanted since Tauri utilizes the system's native WebView instead of bundling Chromium. However, Tauri is built on Rust and brings its own framework overhead. It is definitely lighter than Electron, but it still feels like a lot of heavy machinery for a task as simple as opening a URL in a webview.
 
-Tinycord uses your system's native WebView instead of bundling a browser:
+So, I decided to build Tinycord.
 
-- **macOS** -- WKWebView (Safari's engine)
-- **Windows** -- WebView2 (Edge's engine)
-- **Linux** -- WebKitGTK
+It is a straightforward Zig program that spins up a native WebView and loads `discord.com/app`. That is the entire core concept. It takes about 50 lines of Zig, a small Objective-C file to handle macOS media permissions, and spits out a binary under 5 MB. There is no Electron, no Tauri, and no framework overhead. It just lets the OS do what it does best.
 
-The result is a binary under 5 MB that starts instantly and uses a fraction of the memory.
+The philosophy behind it is simple: the less code standing between you and Discord, the better. You get a smaller attack surface, lower memory usage, and fewer moving parts that can break. Tinycord does not add features, mod the client, or inject anything right now. It is quite literally just a window.
 
-## Why Zig?
+It is still early days, so I wouldn't call it fully stable yet. I have a backlog of things I want to implement, like native notifications, telemetry blocking, and tray behavior. That said, the foundation is solid, and it works perfectly fine for basic use, including voice calls.
 
-Zig is a small language with a simple toolchain. No hidden control flow, no GC, no heavy runtime. For a program whose core is "open a WebView and load a URL," Zig gets out of the way and lets the OS do the work.
-
-The entire app is ~50 lines of Zig plus a small Objective-C file for macOS media permissions.
-
-## Current status
-
-Tinycord is **not stable yet**. It works for basic use -- browsing servers, sending messages, voice calls -- but it's missing several features I plan to add:
-
-- Native OS notifications (requires JavaScript injection into the web app)
-- Telemetry blocking (Discord's web app includes analytics that the desktop client normally strips)
-- Proper tray/minimize-to-menu behavior
-- Keyboard shortcut customization
-
-### The injection plan
-
-Discord's web app, like the desktop client, is essentially a web page. The official client injects JavaScript to add native features. Tinycord will do the same -- a small injected script that:
-
-1. Intercepts Discord's notification API and routes it through native OS notifications
-2. Blocks telemetry and analytics endpoints
-3. Adds tray integration and custom shortcuts
-
-This script will be minimal, open source, and auditable. No obfuscation, no tracking, no external network calls.
-
-### Vencord and plugins
-
-Longer term, I want to support loading [Vencord](https://vencord.dev) and other injectors. Since Tinycord is just a WebView, the injection mechanism is straightforward -- it's a matter of providing a stable API for third-party scripts to hook into the web app before Discord's code runs.
-
-## What it is not
-
-Tinycord does not modify Discord's interface, add features, block ads, or inject anything into the web app -- **yet**. Currently it is literally a WebView that loads `discord.com/app`. The injection system is planned but not implemented.
-
-## What it is
-
-A foundation. A minimal, auditable, native wrapper around Discord that can be extended with intent rather than bloat.
-
-Check the [GitHub repo](https://github.com/ilyeshdz/tinycord) for source code and the [download page](/download) for prebuilt binaries.
+If you want to check it out, the source code is up on the [GitHub repo](https://github.com/ilyeshdz/tinycord), and you can grab prebuilt binaries from the [download page](https://www.google.com/search?q=/download). It's MIT licensed, and contributions are always welcome.

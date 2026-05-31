@@ -1,45 +1,31 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import BaseLayout from './BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate } = Astro.props;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={title} description={description} />
-  </head>
-  <body class="bg-surface text-primary">
-    <Header />
-
-    <main class="prose prose-gray dark:prose-invert max-w-2xl mx-auto px-4 py-16">
-      <article>
-        <div class="not-prose mb-10 text-center">
-          <p class="text-secondary text-sm m-0">
-            <FormattedDate date={pubDate} />
-            {
-              updatedDate && (
-                <span class="text-tertiary italic ml-2">
-                  (Updated <FormattedDate date={updatedDate} />)
-                </span>
-              )
-            }
-          </p>
-          <h1 class="text-3xl font-bold tracking-tight m-0 mt-2 text-primary">
-            {title}
-          </h1>
-        </div>
-        <div class="border-t border-default mb-10" />
-        <slot />
-      </article>
-    </main>
-
-    <Footer />
-  </body>
-</html>
+<BaseLayout {title} {description} mainClass="py-16">
+  <article class="prose prose-invert">
+    <div class="not-prose mb-10 text-center">
+      <p class="text-secondary text-sm m-0">
+        <FormattedDate date={pubDate} />
+        {
+          updatedDate && (
+            <span class="text-tertiary italic ml-2">
+              (Updated <FormattedDate date={updatedDate} />)
+            </span>
+          )
+        }
+      </p>
+      <h1 class="text-3xl font-bold tracking-tight m-0 mt-2 text-primary">
+        {title}
+      </h1>
+    </div>
+    <div class="border-t border-default mb-10" />
+    <slot />
+  </article>
+</BaseLayout>
