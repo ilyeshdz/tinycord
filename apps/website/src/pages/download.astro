@@ -1,7 +1,6 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
 import { SITE_TITLE } from '../consts';
 
 interface Release {
@@ -35,148 +34,60 @@ const macAsset = find(/Darwin_arm64.*\.tar\.gz$/) || find(/Darwin_x86_64.*\.tar\
 const winAsset = find(/Windows_x86_64.*\.zip$/)
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`Download - ${SITE_TITLE}`} description="Download Tinycord for your platform" />
-  </head>
-  <body class="bg-surface text-primary">
-    <Header />
+const fallbackUrl = release?.html_url || 'https://github.com/ilyeshdz/tinycord/releases/latest'
+---
 
-    <main class="max-w-2xl mx-auto px-4 py-16">
-      <h1 class="text-3xl font-bold tracking-tight m-0 mb-2">
-        Download
-      </h1>
+<BaseLayout title={`Download - ${SITE_TITLE}`} description="Download Tinycord for your platform" mainClass="py-16">
+  <h1 class="text-xl font-semibold tracking-tight m-0">Download</h1>
 
+  {release && <p class="text-tertiary text-xs mt-1 m-0">{release.tag_name}</p>}
+  {error && <p class="text-tertiary text-xs mt-1 m-0">{error}</p>}
+
+  <div class="grid gap-3 sm:grid-cols-2">
+    <article class="rounded-xl border border-default bg-muted p-5">
+      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">macOS</h2>
+      <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">
+        Apple Silicon & Intel
+      </p>
       {
-        release && (
-          <p class="text-secondary text-sm m-0 mb-8">
-            Latest release: <a href={release.html_url} class="text-accent underline text-sm">{release.tag_name}</a>
-          </p>
+        macAsset ? (
+          <Button variant="primary" href={macAsset.browser_download_url}>Download {macAsset.name.replace(/\.(dmg|tar\.gz)$/, '')}</Button>
+        ) : (
+          <Button variant="primary" href={fallbackUrl}>Download from GitHub</Button>
         )
       }
+    </article>
 
+    <article class="rounded-xl border border-default bg-muted p-5">
+      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">Windows</h2>
+      <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">x86_64</p>
       {
-        error && (
-          <p class="text-tertiary text-sm m-0 mb-8">
-            {error}
-          </p>
+        winAsset ? (
+          <Button variant="primary" href={winAsset.browser_download_url}>Download {winAsset.name.replace(/\.(zip|exe)$/, '')}</Button>
+        ) : (
+          <Button variant="primary" href={fallbackUrl}>Download from GitHub</Button>
         )
       }
+    </article>
 
-      <div class="grid gap-3 sm:grid-cols-2">
-        <article class="rounded-xl border border-default bg-muted p-5">
-          <div class="flex items-center gap-2 mb-3">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="text-secondary shrink-0">
-              <path d="M12 2a10 10 0 1 0 10 10" />
-              <path d="M12 2v6l3-3" />
-              <path d="M12 8V2" />
-            </svg>
-            <h2 class="text-sm font-semibold m-0 text-primary">macOS</h2>
-          </div>
-          <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">
-            Apple Silicon & Intel
-          </p>
-          {
-            macAsset ? (
-              <a href={macAsset.browser_download_url} class="download-btn">
-                Download {macAsset.name.replace(/\.(dmg|tar\.gz)$/, '')}
-              </a>
-            ) : (
-              <a href={`${release?.html_url || 'https://github.com/ilyeshdz/tinycord/releases/latest'}`} class="download-btn">
-                Download from GitHub
-              </a>
-            )
-          }
-        </article>
+    <article class="rounded-xl border border-default bg-muted p-5 opacity-60">
+      <h2 class="text-sm font-semibold m-0 mb-1 text-primary">Linux</h2>
+      <p class="text-secondary text-xs m-0 mb-1 leading-relaxed">
+        Not available as a prebuilt binary yet.
+      </p>
+      <p class="text-tertiary text-xs m-0 leading-relaxed">
+        Build from source. See the README for dependencies (WebKitGTK).
+      </p>
+    </article>
+  </div>
 
-        <article class="rounded-xl border border-default bg-muted p-5">
-          <div class="flex items-center gap-2 mb-3">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="text-secondary shrink-0">
-              <rect x="4" y="4" width="16" height="16" rx="2" />
-              <path d="M9 8h6" />
-              <path d="M9 12h6" />
-              <path d="M9 16h4" />
-            </svg>
-            <h2 class="text-sm font-semibold m-0 text-primary">Windows</h2>
-          </div>
-          <p class="text-secondary text-xs m-0 mb-3 leading-relaxed">
-            x86_64
-          </p>
-          {
-            winAsset ? (
-              <a href={winAsset.browser_download_url} class="download-btn">
-                Download {winAsset.name.replace(/\.(zip|exe)$/, '')}
-              </a>
-            ) : (
-              <a href={`${release?.html_url || 'https://github.com/ilyeshdz/tinycord/releases/latest'}`} class="download-btn">
-                Download from GitHub
-              </a>
-            )
-          }
-        </article>
-
-        <article class="rounded-xl border border-default bg-muted p-5 opacity-60">
-          <div class="flex items-center gap-2 mb-3">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="text-secondary shrink-0">
-              <path d="M18 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2" />
-              <path d="M12 2v12" />
-              <path d="m9 11 3 3 3-3" />
-            </svg>
-            <h2 class="text-sm font-semibold m-0 text-primary">Linux</h2>
-          </div>
-          <p class="text-secondary text-xs m-0 mb-1 leading-relaxed">
-            Not available as a prebuilt binary yet.
-          </p>
-          <p class="text-tertiary text-xs m-0 leading-relaxed">
-            You can build from source. See the README for dependencies (WebKitGTK).
-          </p>
-        </article>
-      </div>
-
-      <section class="mt-12 pt-8 border-t border-default">
-        <h2 class="text-sm font-semibold m-0 mb-3 text-primary">Build from source</h2>
-        <div class="bg-muted rounded-lg p-4 text-sm font-mono text-secondary overflow-x-auto">
-          <div>git clone https://github.com/ilyeshdz/tinycord.git</div>
-          <div>cd tinycord/apps/desktop</div>
-          <div class="text-tertiary"># install dependencies (see README)</div>
-          <div>zig build app</div>
-        </div>
-      </section>
-
-      <section class="mt-8">
-        <h2 class="text-sm font-semibold m-0 mb-3 text-primary">System requirements</h2>
-        <ul class="text-secondary text-sm m-0 pl-4 space-y-1.5">
-          <li><strong class="text-primary">macOS 12+</strong> — Uses WKWebView (Safari engine)</li>
-          <li><strong class="text-primary">Windows 10+</strong> — Uses WebView2 (Edge engine, ships with Windows 11)</li>
-          <li><strong class="text-primary">Linux</strong> — Requires WebKitGTK 4.1 (build from source)</li>
-        </ul>
-      </section>
-    </main>
-
-    <Footer />
-  </body>
-</html>
-
-<style>
-  .download-btn {
-    display: inline-flex;
-    height: 2.25rem;
-    align-items: center;
-    border-radius: 0.5rem;
-    background: #0d9488;
-    padding: 0 1rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: white;
-    text-decoration: none;
-    transition: opacity 0.15s;
-  }
-  .download-btn:hover {
-    opacity: 0.85;
-  }
-  .dark .download-btn {
-    background: #2dd4bf;
-    color: #0f172a;
-  }
-</style>
+  <section class="mt-12 pt-8 border-t border-default">
+    <h2 class="text-sm font-semibold m-0 mb-3 text-primary">Build from source</h2>
+    <div class="bg-muted rounded-lg p-4 text-sm font-mono text-secondary overflow-x-auto">
+      <div>git clone https://github.com/ilyeshdz/tinycord.git</div>
+      <div>cd tinycord/apps/desktop</div>
+      <div class="text-tertiary"># install dependencies (see README)</div>
+      <div>zig build app</div>
+    </div>
+  </section>
+</BaseLayout>
