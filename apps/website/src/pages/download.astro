@@ -27,8 +27,12 @@ try {
   error = 'Could not fetch release data'
 }
 
-const macAsset = release?.assets.find(a => a.name.endsWith('.dmg') || a.name.endsWith('.tar.gz') && a.name.includes('Darwin'))
-const winAsset = release?.assets.find(a => a.name.endsWith('.zip') && a.name.includes('Windows') || a.name.endsWith('.exe'))
+function find(re: RegExp) {
+  return release?.assets.find(a => re.test(a.name))
+}
+
+const macAsset = find(/Darwin_arm64.*\.tar\.gz$/) || find(/Darwin_x86_64.*\.tar\.gz$/)
+const winAsset = find(/Windows_x86_64.*\.zip$/)
 ---
 
 <!doctype html>
