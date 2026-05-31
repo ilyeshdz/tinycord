@@ -76,7 +76,7 @@ fn getVersion() []const u8 {
         const s = std.mem.span(ref);
         return if (s.len > 0 and s[0] == 'v') s[1..] else s;
     }
-    return "0.1.0";
+    return "0.17.1";
 }
 
 fn makeAppBundle(
