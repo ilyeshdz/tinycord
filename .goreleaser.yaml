@@ -14,7 +14,7 @@ builds:
     flags:
       - -Doptimize=ReleaseSafe
 
-universal_binary:
+universal_binaries:
   - replace: true
 
 archives:
