@@ -1,23 +1,23 @@
 ---
 title: 'Introducing Tinycord'
-description: 'A lightweight Discord client built with Zig — no Electron, no bloat.'
+description: 'Why Tinycord exists, why it is written in Zig, and what it is trying to improve.'
 pubDate: 'May 30 2026'
 ---
 
-I've been thinking about Discord's desktop app for a while.
+I built Tinycord because Discord's desktop client kept feeling heavier than the problem it solves.
 
-It's built on Electron, which means it essentially ships a full Chromium browser just to render a chat interface. You end up with around 200 MB taken up on your disk and hundreds of megabytes of RAM down the drain, all for what is basically just a web page.
+The official app is Electron-based, which means it ships a full Chromium runtime to display what is, at its core, a web app. That comes with real costs: more disk usage, more memory pressure, a larger attack surface, and more complexity when all you want is a chat window that stays out of the way.
 
-People have built some solid alternatives to fix this. [Vesktop](https://github.com/Vencord/Vesktop) is a popular choice because it runs Discord's web app in a newer version of Electron than the official client and hooks up Vencord for client modding. While it runs better than stock Discord, it doesn't escape the underlying issue because it's still Electron and it's still shipping a browser.
+There are already good alternatives. [Vesktop](https://github.com/Vencord/Vesktop) improves the experience and gives people a faster-moving client with Vencord support. [Dorion](https://spikehd.dev/projects/dorion/) takes a different route with Tauri and native webviews. Both are solid projects, and both validated the basic idea: Discord does not need to be wrapped in a heavyweight desktop shell to be usable.
 
-Then you have projects like [Dorion](https://spikehd.dev/projects/dorion/), which uses Tauri. This is much closer to what I wanted since Tauri utilizes the system's native WebView instead of bundling Chromium. However, Tauri is built on Rust and brings its own framework overhead. It is definitely lighter than Electron, but it still feels like a lot of heavy machinery for a task as simple as opening a URL in a webview.
+Tinycord is my answer to a narrower question: what is the smallest, cleanest desktop wrapper that still feels native?
 
-So, I decided to build Tinycord.
+The answer I landed on was Zig. Zig gives me direct control over the build, a small runtime story, and a codebase that stays close to the metal without forcing me into a large framework. That matters here because the app does not need much logic at all. It needs to create a native window, embed the platform webview, load `discord.com/app`, and handle the small amount of glue code that makes that work across platforms.
 
-It is a straightforward Zig program that spins up a native WebView and loads `discord.com/app`. That is the entire core concept. It takes about 50 lines of Zig, a small Objective-C file to handle macOS media permissions, and spits out a binary under 5 MB. There is no Electron, no Tauri, and no framework overhead. It just lets the OS do what it does best.
+That is the entire core concept. The app logic is only a few dozen lines of Zig, plus a tiny Objective-C helper for macOS media permissions. The result is a binary under 5 MB, with no bundled browser, no Electron, and no framework layer sitting between the user and the OS.
 
-The philosophy behind it is simple: the less code standing between you and Discord, the better. You get a smaller attack surface, lower memory usage, and fewer moving parts that can break. Tinycord does not add features, mod the client, or inject anything right now. It is quite literally just a window.
+That constraint is the point. Fewer moving parts means less memory usage, a smaller attack surface, and fewer ways for the desktop wrapper itself to get in the way. Tinycord does not inject into Discord, add client mods, or try to reinvent the app. It is intentionally boring: a native window that loads Discord and gets out of the way.
 
-It is still early days, so I wouldn't call it fully stable yet. I have a backlog of things I want to implement, like native notifications, telemetry blocking, and tray behavior. That said, the foundation is solid, and it works perfectly fine for basic use, including voice calls.
+That said, it is not the finished version of the idea. The current backlog includes native notifications, telemetry blocking, tray behavior, and the rough edges that come with making a tiny cross-platform app feel polished. The foundation is there, though, and the current build is already usable for everyday Discord use, including voice calls.
 
-If you want to check it out, the source code is up on the [GitHub repo](https://github.com/ilyeshdz/tinycord), and you can grab prebuilt binaries from the [download page](https://www.google.com/search?q=/download). It's MIT licensed, and contributions are always welcome.
+If you want to follow along, the source code is on the [GitHub repo](https://github.com/ilyeshdz/tinycord), and the prebuilt binaries are on the [download page](/download). Tinycord is MIT licensed, and contributions are welcome.
