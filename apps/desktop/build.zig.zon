@@ -1,6 +1,6 @@
 .{
     .name = .desktop,
-    .version = "0.16.0",
+    .version = "1.18.0",
     .dependencies = .{
         .webview = .{
             .url = "git+https://github.com/ilyeshdz/zig-webview#5e93a13d93b137673cc18c539dd9139e2d08617c",

@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) void {
     }
 }
 
-fn getVersion() []const u8 {
+fn getVersion(_: *std.Build) []const u8 {
     if (std.c.getenv("GORELEASER_CURRENT_TAG")) |tag| {
         const s = std.mem.span(tag);
         return if (s.len > 0 and s[0] == 'v') s[1..] else s;
@@ -76,7 +76,7 @@ fn getVersion() []const u8 {
         const s = std.mem.span(ref);
         return if (s.len > 0 and s[0] == 'v') s[1..] else s;
     }
-    return "0.17.1";
+    return @import("src/version.zig").version;
 }
 
 fn makeAppBundle(
@@ -85,7 +85,7 @@ fn makeAppBundle(
     icon_path: []const u8,
 ) *std.Build.Step {
     const write_files = b.addWriteFiles();
-    const ver = getVersion();
+    const ver = getVersion(b);
 
     const plist = b.fmt(
         \\<?xml version="1.0" encoding="UTF-8"?>

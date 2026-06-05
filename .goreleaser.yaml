@@ -3,7 +3,7 @@ version: 2
 project_name: tinycord
 
 builds:
-  - id: tinycord-darwin
+  - id: tinycord
     builder: zig
     binary: tinycord
     dir: apps/desktop
@@ -13,33 +13,11 @@ builds:
     flags:
       - -Doptimize=ReleaseSafe
 
-  - id: tinycord-windows
-    builder: zig
-    binary: tinycord
-    dir: apps/desktop
-    targets:
-      - aarch64-windows-gnu
-      - x86_64-windows-gnu
-    flags:
-      - -Doptimize=ReleaseSafe
-
 universal_binaries:
   - id: tinycord
     ids:
-      - tinycord-darwin
+      - tinycord
     replace: true
-
-archives:
-  - formats: [tar.gz]
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-    format_overrides:
-      - goos: windows
-        formats: [zip]
 
 changelog:
   sort: asc

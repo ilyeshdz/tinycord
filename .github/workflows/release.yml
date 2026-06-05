@@ -5,12 +5,17 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to release (must exist, e.g. v1.18.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
-  macos:
+  release:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,18 +28,20 @@ jobs:
         run: |
           SDK=$(xcrun --sdk macosx --show-sdk-path 2>/dev/null) || SDK="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
           echo "SDKROOT=$SDK" >> $GITHUB_ENV
+      - name: Resolve release tag
+        run: echo "TAG=${{ github.event.inputs.tag || github.ref_name }}" >> $GITHUB_ENV
       - uses: goreleaser/goreleaser-action@v6
         with:
           version: '~> v2'
-          args: release --clean
+          args: release --clean --skip-archive --skip-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create macOS DMG
         run: apps/desktop/scripts/make-dmg.sh
         env:
-          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}
-      - name: Upload installers to release
+          GORELEASER_CURRENT_TAG: ${{ env.TAG }}
+      - name: Create Release and upload DMG
         run: |
-          gh release upload "${{ github.ref_name }}" dist/*.dmg --clobber
+          gh release create "${{ env.TAG }}" dist/*.dmg --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
