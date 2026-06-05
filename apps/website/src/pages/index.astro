@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_DESCRIPTION, SITE_TITLE, pageUrl } from '../consts';
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION} mainClass="py-16 sm:py-20">
@@ -13,7 +13,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
         {SITE_DESCRIPTION}
       </p>
       <div class="mt-6 flex gap-3">
-        <a href="/download" class="btn-primary">
+        <a href={pageUrl('/download')} class="btn-primary">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13" class="shrink-0">
             <path d="M8 2v9M4 7l4 4 4-4" />
             <path d="M3 12v1a1 1 0 001 1h8a1 1 0 001-1v-1" />

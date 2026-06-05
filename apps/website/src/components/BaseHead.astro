@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { SITE_TITLE } from "../consts";
+import { SITE_TITLE, pageUrl } from "../consts";
 import { Font } from "astro:assets";
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
 	description: string;
 }
 
+const base = import.meta.env.BASE_URL;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description } = Astro.props;
@@ -16,14 +17,14 @@ const { title, description } = Astro.props;
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" href="/favicon.ico" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="icon" type="image/svg+xml" href={pageUrl("/favicon.svg")} />
+<link rel="icon" href={pageUrl("/favicon.ico")} />
+<link rel="sitemap" href={pageUrl("/sitemap-index.xml")} />
 <link
 	rel="alternate"
 	type="application/rss+xml"
 	title={SITE_TITLE}
-	href={new URL("rss.xml", Astro.site)}
+	href={new URL(`${base}rss.xml`, Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
 

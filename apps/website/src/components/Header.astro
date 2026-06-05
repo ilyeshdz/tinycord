@@ -1,22 +1,24 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, pageUrl } from '../consts';
 
+const base = import.meta.env.BASE_URL;
 const pathname = Astro.url.pathname;
-const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
+const relativePath = pathname.startsWith(base) ? '/' + pathname.slice(base.length) : pathname;
+const isActive = (href: string) => relativePath === href || (href !== '/' && relativePath.startsWith(href));
 ---
 
 <header class="sticky top-0 z-50 border-b border-default bg-surface">
   <nav class="mx-auto flex h-12 max-w-4xl items-center justify-between px-4">
-    <a href="/" class="text-primary font-bold text-sm tracking-tight no-underline hover:text-accent">
+    <a href={pageUrl('/')} class="text-primary font-bold text-sm tracking-tight no-underline hover:text-accent">
       {SITE_TITLE}
     </a>
 
     <div class="flex items-center gap-1">
       <div class="hidden sm:flex items-center gap-1">
-        <a href="/" class={isActive('/') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Home</a>
-        <a href="/blog" class={isActive('/blog') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Blog</a>
-        <a href="/about" class={isActive('/about') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>About</a>
-        <a href="/download" class={isActive('/download') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Download</a>
+        <a href={pageUrl('/')} class={isActive('/') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Home</a>
+        <a href={pageUrl('/blog')} class={isActive('/blog') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Blog</a>
+        <a href={pageUrl('/about')} class={isActive('/about') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>About</a>
+        <a href={pageUrl('/download')} class={isActive('/download') ? 'px-3 py-1.5 text-sm text-accent font-medium no-underline' : 'px-3 py-1.5 text-sm text-secondary hover:text-accent no-underline'}>Download</a>
       </div>
 
       <a href="https://github.com/ilyeshdz/tinycord" class="flex items-center justify-center w-8 h-8 text-secondary hover:text-accent" aria-label="GitHub" target="_blank">
@@ -34,9 +36,9 @@ const isActive = (href: string) => pathname === href || (href !== '/' && pathnam
   </nav>
 
   <div id="mobile-menu" class="hidden sm:hidden border-t border-default bg-surface px-4 py-2 space-y-1">
-    <a href="/" class={isActive('/') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Home</a>
-    <a href="/blog" class={isActive('/blog') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Blog</a>
-    <a href="/about" class={isActive('/about') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>About</a>
-    <a href="/download" class={isActive('/download') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Download</a>
+    <a href={pageUrl('/')} class={isActive('/') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Home</a>
+    <a href={pageUrl('/blog')} class={isActive('/blog') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Blog</a>
+    <a href={pageUrl('/about')} class={isActive('/about') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>About</a>
+    <a href={pageUrl('/download')} class={isActive('/download') ? 'block px-3 py-2 text-sm text-accent font-medium no-underline' : 'block px-3 py-2 text-sm text-secondary no-underline hover:text-accent'}>Download</a>
   </div>
 </header>

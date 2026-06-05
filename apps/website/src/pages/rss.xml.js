@@ -3,6 +3,7 @@ import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 export async function GET(context) {
+	const base = import.meta.env.BASE_URL;
 	const posts = await getCollection('blog');
 	return rss({
 		title: SITE_TITLE,
@@ -10,7 +11,7 @@ export async function GET(context) {
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,
-			link: `/blog/${post.id}/`,
+			link: `${base}blog/${post.id}/`,
 		})),
 	});
 }
