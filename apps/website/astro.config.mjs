@@ -1,20 +1,10 @@
 // @ts-check
 
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import UnoCSS from '@unocss/astro';
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig } from 'astro/config';
+import icon from 'astro-icon';
 
 export default defineConfig({
-	site: process.env.ASTRO_SITE_URL || 'https://tinycord.app',
-	base: process.env.ASTRO_BASE || '/',
-	integrations: [mdx(), sitemap(), UnoCSS({ injectReset: true })],
-	fonts: [
-		{
-			provider: fontProviders.fontshare(),
-			cssVariable: "--font-general-sans",
-			name: "General Sans",
-			weights: [400, 500, 600, 700]
-		}
-	]
+  site: process.env.ASTRO_SITE_URL || 'https://ilyeshdz.github.io',
+  base: process.env.ASTRO_BASE || '/tinycord/',
+  integrations: [icon()],
 });

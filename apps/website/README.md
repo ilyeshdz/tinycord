@@ -1,11 +1,8 @@
-# @tinycord/website
+# Tinycord website
 
-Tinycord project website built with [Astro](https://astro.build).
+Minimal Astro site for Tinycord.
 
-## Commands
-
-| Command | Action |
-| :--- | :--- |
-| `pnpm dev` | Start dev server at `localhost:4321` |
-| `pnpm build` | Build to `./dist/` |
-| `pnpm preview` | Preview build locally |
+```sh
+pnpm dev
+pnpm build
+```
