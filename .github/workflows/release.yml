@@ -82,7 +82,18 @@ jobs:
         run: apps/desktop/scripts/make-dmg.sh
         env:
           TAG: ${{ env.TAG }}
+      - name: Check if release exists
+        id: check-release
+        run: |
+          if gh release view "${{ env.TAG }}" &>/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release and upload DMG
+        if: steps.check-release.outputs.exists == 'false'
         run: |
           gh release create "${{ env.TAG }}" dist/*.dmg --notes-file CHANGELOG.md
         env:
