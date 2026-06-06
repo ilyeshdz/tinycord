@@ -1,4 +1,4 @@
-name: Release Desktop App
+name: Release
 
 on:
   push:
@@ -6,16 +6,60 @@ on:
       - 'v*'
   workflow_dispatch:
     inputs:
+      bump:
+        description: 'Version bump type (patch/minor/major)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - patch
+          - minor
+          - major
       tag:
-        description: 'Git tag to release (must exist, e.g. v1.18.0)'
-        required: true
+        description: 'Existing Git tag to release (e.g. v1.18.0)'
+        required: false
         type: string
 
 permissions:
   contents: write
 
 jobs:
+  prepare:
+    if: github.event_name == 'workflow_dispatch' && inputs.bump != ''
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.get-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Bump version and generate changelog
+        run: pnpm release --release-as ${{ inputs.bump }}
+      - name: Get new tag
+        id: get-tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - name: Push commit and tag
+        run: git push origin HEAD:main --follow-tags
+
   release:
+    needs: [prepare]
+    if: |
+      !cancelled() && (
+        github.event_name == 'push' ||
+        needs.prepare.result == 'success' ||
+        inputs.tag != ''
+      )
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,19 +73,17 @@ jobs:
           SDK=$(xcrun --sdk macosx --show-sdk-path 2>/dev/null) || SDK="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
           echo "SDKROOT=$SDK" >> $GITHUB_ENV
       - name: Resolve release tag
-        run: echo "TAG=${{ github.event.inputs.tag || github.ref_name }}" >> $GITHUB_ENV
-      - uses: goreleaser/goreleaser-action@v6
-        with:
-          version: '~> v2'
-          args: release --clean --skip=archive,publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.tag || github.ref_name || needs.prepare.outputs.tag }}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: Build release binary
+        run: scripts/build-release.sh
       - name: Create macOS DMG
         run: apps/desktop/scripts/make-dmg.sh
         env:
-          GORELEASER_CURRENT_TAG: ${{ env.TAG }}
+          TAG: ${{ env.TAG }}
       - name: Create Release and upload DMG
         run: |
-          gh release create "${{ env.TAG }}" dist/*.dmg --generate-notes
+          gh release create "${{ env.TAG }}" dist/*.dmg --notes-file CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

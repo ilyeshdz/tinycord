@@ -3,7 +3,7 @@ set -euo pipefail
 
 APP_NAME="Tinycord"
 BINARY="tinycord"
-VERSION="${GORELEASER_CURRENT_TAG:-$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")}"
+VERSION="${TAG:-$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")}"
 VERSION="${VERSION#v}"
 UNIVERSAL_DIR="dist/tinycord_darwin_all"
 BUNDLE_DIR="dist/${APP_NAME}.app"

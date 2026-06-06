@@ -1,6 +1,4 @@
 node_modules
 .DS_Store
 .pnpm-store
-# Added by goreleaser init:
 dist/
-node_modules/

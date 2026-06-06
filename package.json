@@ -5,10 +5,24 @@
   "type": "module",
   "packageManager": "pnpm@10.4.1",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
   },
   "scripts": {
     "build": "pnpm -r build",
-    "start": "pnpm -r start"
+    "start": "pnpm -r start",
+    "release": "commit-and-tag-version",
+    "release:dry": "commit-and-tag-version --dry-run"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "commit-and-tag-version": "^12.7.3",
+    "lefthook": "^2.1.9"
   }
 }

@@ -68,10 +68,6 @@ pub fn build(b: *std.Build) void {
 }
 
 fn getVersion(_: *std.Build) []const u8 {
-    if (std.c.getenv("GORELEASER_CURRENT_TAG")) |tag| {
-        const s = std.mem.span(tag);
-        return if (s.len > 0 and s[0] == 'v') s[1..] else s;
-    }
     if (std.c.getenv("GITHUB_REF_NAME")) |ref| {
         const s = std.mem.span(ref);
         return if (s.len > 0 and s[0] == 'v') s[1..] else s;
